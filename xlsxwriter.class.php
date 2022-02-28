@@ -214,7 +214,7 @@ class XLSXWriter
 		return $column_types;
 	}
 
-	public function writeSheetHeader($sheet_name, array $header_types, $col_options = null)
+	public function writeSheetHeader($sheet_name, array $header_types, $col_options = null, $header_titles = null)
 	{
 		if (empty($sheet_name) || empty($header_types) || !empty($this->sheets[$sheet_name]))
 			return;
@@ -236,10 +236,14 @@ class XLSXWriter
 		$sheet->columns = $this->initializeColumnTypes($header_types);
 		if (!$suppress_row)
 		{
-			$header_row = array_keys($header_types);      
+			$header_row = array_keys($header_types);
 
 			$sheet->file_writer->write('<row collapsed="false" customFormat="false" customHeight="false" hidden="false" ht="12.1" outlineLevel="0" r="' . (1) . '">');
 			foreach ($header_row as $c => $v) {
+				if (isset($header_titles[$v])) {
+					$v = $header_titles[$v];
+				}
+
 				$cell_style_idx = empty($style) ? $sheet->columns[$c]['default_cell_style'] : $this->addCellStyle( 'GENERAL', json_encode(isset($style[0]) ? $style[$c] : $style) );
 				$this->writeCell($sheet->file_writer, 0, $c, $v, $number_format_type='n_string', $cell_style_idx);
 			}
